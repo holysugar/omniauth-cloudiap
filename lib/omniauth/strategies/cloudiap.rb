@@ -37,7 +37,7 @@ module OmniAuth
       end
 
       def uid
-        userinfo[:identifier] if userinfo
+        userinfo[:uid] if userinfo
       end
 
       def info
@@ -53,9 +53,10 @@ module OmniAuth
       def userinfo_from_jwt
         if token = env["HTTP_X_GOOG_IAP_JWT_ASSERTION"]
           payload, header = ::OmniAuth::Cloudiap::IAPJWT.new(aud: options[:aud]).validate(token)
+          uid = payload["sub"].sub(/^accounts.google.com:/, "")
           email = payload["email"]
           result = {
-            identifier: payload["sub"],
+            uid: uid,
             email: email,
             name: username_from_email(email),
             payload: payload.to_json,
@@ -66,9 +67,11 @@ module OmniAuth
       end
 
       def userinfo_from_http_header
+        uid = env["HTTP_X_GOOG_AUTHENTICATED_USER_ID"].sub(/^accounts.google.com:/, "")
         email = env["HTTP_X_GOOG_AUTHENTICATED_USER_EMAIL"].sub(/^accounts.google.com:/, "")
-        rsult = {
-          identifier: env["HTTP_X_GOOG_AUTHENTICATED_USER_ID"],
+
+        result = {
+          uid: uid,
           email: email,
           name: username_from_email(email),
         }

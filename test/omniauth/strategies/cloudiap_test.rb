@@ -19,7 +19,7 @@ class OmniAuth::Strategies::CloudiapTest < Minitest::Test
         use Rack::Session::Cookie
         use OmniAuth::Strategies::Cloudiap, options
         run lambda{|env|
-          body = env.dig("omniauth.auth", "info").fetch_values("email", "name").join(":")
+          body = env.dig("omniauth.auth", "info").fetch_values("email", "name", "uid").join(":")
           [200, env, [body]]
         }
       end
@@ -40,7 +40,7 @@ class OmniAuth::Strategies::CloudiapTest < Minitest::Test
     with_stubbed_jwt_decode do
       result = get "/auth/cloudiap/callback", {}, dummy_rack_env
       assert { result.status == 200 }
-      assert { result.body == "#{email_example}:#{email_example}" }
+      assert { result.body == "#{email_example}:#{email_example}:#{uid}" }
     end
   end
 
@@ -55,7 +55,7 @@ class OmniAuth::Strategies::CloudiapTest < Minitest::Test
     with_stubbed_jwt_decode do
       result = get "/auth/cloudiap/callback", {}, dummy_rack_env
       assert { result.status == 200 }
-      assert { result.body == "#{email_example}:myname" }
+      assert { result.body == "#{email_example}:myname:#{uid}" }
     end
   end
 

@@ -10,8 +10,12 @@ module CloudiapTestHelper
     "foo@example.com"
   end
 
+  def uid
+    "999999999999999999999"
+  end
+
   def uid_example
-    "accounts.google.com:999999999999999999999"
+    "accounts.google.com:#{uid}"
   end
 
   def payload_example
