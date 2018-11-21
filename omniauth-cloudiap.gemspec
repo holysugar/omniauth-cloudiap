@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = OmniAuth::Cloudiap::VERSION
   spec.authors       = ["HORII Keima"]
   spec.email         = ["holysugar@gmail.com"]
+  spec.license       = "MIT"
 
   spec.summary       = %q{omniauth strategy using Google Cloud IAP}
   spec.description   = %q{omniauth strategy using Google Cloud IAP}
