@@ -24,7 +24,7 @@ module OmniAuth
       def jwk_keys
         @jwk_keys ||= begin
           url = "https://www.gstatic.com/iap/verify/public_key-jwk"
-          open(url) { |f| JSON.parse(f.read) }
+          URI.open(url) { |f| JSON.parse(f.read) }
         end
       end
 
