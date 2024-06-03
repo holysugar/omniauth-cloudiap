@@ -10,7 +10,7 @@ module OmniAuth
     end
 
     def test_that_it_has_a_version_number
-      refute_nil ::OmniAuth::Cloudiap::VERSION
+      assert { ::OmniAuth::Cloudiap::VERSION }
     end
 
     def test_jwk_keys

@@ -9,7 +9,7 @@ Metrics/AbcSize:
   Max: 28
 
 Metrics/MethodLength:
-  Max: 20
+  Enabled: false
 
 Style/NumericLiterals:
   MinDigits: 11

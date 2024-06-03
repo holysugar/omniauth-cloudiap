@@ -21,15 +21,17 @@ module OmniAuth
       end
 
       def jwk_keys
-        @jwk_keys ||= begin
-          url = "https://www.gstatic.com/iap/verify/public_key-jwk"
-          URI.open(url) { |f| JSON.parse(f.read) } # rubocop:disable Security/Open
-        end
+        @jwk_keys ||=
+          begin
+            url = "https://www.gstatic.com/iap/verify/public_key-jwk"
+            URI.open(url) { |f| JSON.parse(f.read) } # rubocop:disable Security/Open
+          end
       end
 
       def jwk_key(token)
         _, header = parse(token)
-        jwk = jwk_keys["keys"].find { |k| k["kid"] == header["kid"] }
+        jwk = jwk_keys["keys"]&.find { |k| k["kid"] == header["kid"] }
+
         curve_name =
           case jwk["crv"]
           when "P-256"

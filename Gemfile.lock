@@ -19,6 +19,7 @@ GEM
     minitest-power_assert (0.3.1)
       minitest
       power_assert (>= 1.1)
+    minitest-stub_any_instance (1.0.3)
     omniauth (2.1.2)
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
@@ -68,6 +69,7 @@ DEPENDENCIES
   bundler
   minitest
   minitest-power_assert
+  minitest-stub_any_instance
   omniauth-cloudiap!
   rack-session
   rack-test
