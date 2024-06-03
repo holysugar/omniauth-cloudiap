@@ -7,4 +7,3 @@ module OmniAuth
 end
 
 require "omniauth/strategies/cloudiap"
-

@@ -1,11 +1,10 @@
-require 'jwt'
-require 'open-uri'
-require 'json'
+require "jwt"
+require "open-uri"
+require "json"
 
 module OmniAuth
   module Cloudiap
     class IAPJWT
-
       class InvalidAudError < Error; end
 
       def initialize(aud: nil)
@@ -13,7 +12,7 @@ module OmniAuth
       end
 
       def decode_with_validate(token)
-        payload, header = validate(token)
+        payload, = validate(token)
         { identifier: payload["sub"], email: payload["email"] }
       end
 
@@ -24,14 +23,14 @@ module OmniAuth
       def jwk_keys
         @jwk_keys ||= begin
           url = "https://www.gstatic.com/iap/verify/public_key-jwk"
-          URI.open(url) { |f| JSON.parse(f.read) }
+          URI.open(url) { |f| JSON.parse(f.read) } # rubocop:disable Security/Open
         end
       end
 
       def jwk_key(token)
         _, header = parse(token)
-        jwk = jwk_keys["keys"].find{|k| k["kid"] == header["kid"] }
-        curve_name = \
+        jwk = jwk_keys["keys"].find { |k| k["kid"] == header["kid"] }
+        curve_name =
           case jwk["crv"]
           when "P-256"
             "prime256v1"
@@ -40,14 +39,14 @@ module OmniAuth
           when "P-521"
             "secp521r1"
           else
-            raise AugumentError, "Unknown crv: #{jwk["crv"]}"
+            fail AugumentError, "Unknown crv: #{jwk['crv']}"
           end
         x = Base64.urlsafe_decode64(jwk["x"])
         y = Base64.urlsafe_decode64(jwk["y"])
 
         key = OpenSSL::PKey::EC.new(curve_name)
         group = OpenSSL::PKey::EC::Group.new(curve_name)
-        bn = OpenSSL::BN.new(["04" + x.unpack("H*").first + y.unpack("H*").first].pack("H*"), 2)
+        bn = OpenSSL::BN.new(Array(["04", x.unpack1("H*"), y.unpack1("H*")].join).pack("H*"), 2)
         key.public_key = OpenSSL::PKey::EC::Point.new(group, bn)
         key
       end
@@ -81,7 +80,7 @@ module OmniAuth
 
       def validate_aud_format(aud)
         case aud
-        when %r|/projects/\d+/apps/\d+|, %r|/projects/\d+/global/backendServices/\d+|
+        when %r{/projects/\d+/apps/\d+}, %r{/projects/\d+/global/backendServices/\d+}
           # do nothing
         else
           fail InvalidAudError, aud
@@ -90,4 +89,3 @@ module OmniAuth
     end
   end
 end
-

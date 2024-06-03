@@ -1,0 +1,39 @@
+
+AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  Exclude:
+    - 'omniauth-cloudiap.gemspec'
+
+Metrics/AbcSize:
+  Max: 28
+
+Metrics/MethodLength:
+  Max: 20
+
+Style/NumericLiterals:
+  MinDigits: 11
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/Documentation:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+Style/RescueStandardError:
+  EnforcedStyle: implicit

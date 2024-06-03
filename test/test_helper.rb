@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "omniauth/cloudiap"
 require "minitest/autorun"
 require "minitest/power_assert"
@@ -6,7 +6,6 @@ require "rack/test"
 require "rack/session"
 
 module CloudiapTestHelper
-
   def email_example
     "foo@example.com"
   end
@@ -21,12 +20,12 @@ module CloudiapTestHelper
 
   def payload_example
     {
-      "iss"   => "https://cloud.google.com/iap",
-      "sub"   => uid_example,
+      "iss" => "https://cloud.google.com/iap",
+      "sub" => uid_example,
       "email" => email_example,
-      "aud"   => "/projects/9999999999999/global/backendServices/9999999999999999999",
-      "exp"   => 1541127981,
-      "iat"   => 1541127381,
+      "aud" => "/projects/9999999999999/global/backendServices/9999999999999999999",
+      "exp" => 1541127981,
+      "iat" => 1541127381,
     }
   end
 
@@ -38,14 +37,13 @@ module CloudiapTestHelper
     }
   end
 
-  def with_stubbed_jwt_decode
-    JWT.stub(:decode, [payload_example, header_example]) do
-      yield
-    end
+  def with_stubbed_jwt_decode(&block)
+    JWT.stub(:decode, [payload_example, header_example], &block)
   end
 
   def silence_warnings
-    old_verbose, $VERBOSE = $VERBOSE, nil
+    old_verbose = $VERBOSE
+    $VERBOSE = nil
     yield
   ensure
     $VERBOSE = old_verbose
