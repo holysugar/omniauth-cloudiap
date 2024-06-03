@@ -3,6 +3,7 @@ require "omniauth/cloudiap"
 require "minitest/autorun"
 require "minitest/power_assert"
 require "rack/test"
+require "rack/session"
 
 module CloudiapTestHelper
 
