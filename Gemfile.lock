@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    omniauth-cloudiap (1.0.0)
+    omniauth-cloudiap (1.1.0)
       jwt
       omniauth
 
