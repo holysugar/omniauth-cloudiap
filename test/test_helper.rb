@@ -6,6 +6,8 @@ require "minitest/stub_any_instance"
 require "rack/test"
 require "rack/session"
 
+OmniAuth.config.request_validation_phase = nil
+
 module CloudiapTestHelper
   def email_example
     "foo@example.com"

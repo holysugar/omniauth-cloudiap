@@ -19,13 +19,6 @@ module OmniAuth
       assert { @iapjwt.jwk_keys.is_a? Hash }
     end
 
-    def test_jwk_key
-      with_stubbed_jwt_decode do
-        key = @iapjwt.jwk_key("dummy-token-string")
-        assert { key.is_a? OpenSSL::PKey::EC }
-      end
-    end
-
     def test_validate
       with_stubbed_jwt_decode do
         payload, header = @iapjwt.validate("dummy-token-string")
@@ -41,10 +34,6 @@ module OmniAuth
           iapjwt.validate("dummy-token-string")
         end
       end
-    end
-
-    def test_parse
-      skip # FIXME
     end
 
     def test_decode_with_validate

@@ -17,53 +17,46 @@ module OmniAuth
       end
 
       def parse(token)
-        JWT.decode token, nil, false
+        JWT.decode(token, nil, true, algorithms: algorithms, jwks: jwks)
       end
 
       def jwk_keys
-        @jwk_keys ||=
-          begin
-            url = "https://www.gstatic.com/iap/verify/public_key-jwk"
-            URI.open(url) { |f| JSON.parse(f.read) } # rubocop:disable Security/Open
-          end
+        url = "https://www.gstatic.com/iap/verify/public_key-jwk"
+        URI.open(url) { |f| JSON.parse(f.read) } # rubocop:disable Security/Open
       end
 
-      def jwk_key(token)
-        _, header = parse(token)
-        jwk = jwk_keys["keys"]&.find { |k| k["kid"] == header["kid"] }
-
-        curve_name =
-          case jwk["crv"]
-          when "P-256"
-            "prime256v1"
-          when "P-384"
-            "secp384r1"
-          when "P-521"
-            "secp521r1"
-          else
-            fail AugumentError, "Unknown crv: #{jwk['crv']}"
-          end
-        x = Base64.urlsafe_decode64(jwk["x"])
-        y = Base64.urlsafe_decode64(jwk["y"])
-
-        key = OpenSSL::PKey::EC.new(curve_name)
-        group = OpenSSL::PKey::EC::Group.new(curve_name)
-        bn = OpenSSL::BN.new(Array(["04", x.unpack1("H*"), y.unpack1("H*")].join).pack("H*"), 2)
-        key.public_key = OpenSSL::PKey::EC::Point.new(group, bn)
-        key
+      def jwks_loader(options)
+        if options[:kid_not_found] && @cache_last_update < Time.now.to_i - 300
+          logger.info("Invalidating JWK cache. #{options[:kid]} not found from previous cache")
+          @cached_keys = nil
+        end
+        @cached_keys ||= begin # rubocop:disable Naming/MemoizedInstanceVariableName
+          @cache_last_update = Time.now.to_i
+          jwks = JWT::JWK::Set.new(jwk_keys)
+          jwks.select! { |key| key[:use] == "sig" } # Signing Keys only
+          jwks
+        end
       end
 
-      def validate(token)
-        iss = "https://cloud.google.com/iap"
-        options = {
-          algorithm: "ES256",
+      def default_jwt_decode_options
+        {
           verify_expiration: true,
           verify_iat: true,
           verify_aud: true,
           verify_iss: true,
-          iss: iss,
         }
-        payload, header = JWT.decode(token, jwk_key(token), true, options)
+      end
+
+      def validate(token)
+        iss = "https://cloud.google.com/iap"
+        options = default_jwt_decode_options.merge(
+          iss: iss,
+          algorithm: "ES256",
+          jwks: method(:jwks_loader),
+        )
+
+        payload, header = JWT.decode(token, nil, true, options)
+
         if @required_aud
           validate_aud(@required_aud, payload["aud"])
         else

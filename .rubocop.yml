@@ -23,6 +23,9 @@ Style/StringLiterals:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: consistent_comma
+
 Style/Documentation:
   Enabled: false
 
@@ -37,3 +40,6 @@ Style/SignalException:
 
 Style/RescueStandardError:
   EnforcedStyle: implicit
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent

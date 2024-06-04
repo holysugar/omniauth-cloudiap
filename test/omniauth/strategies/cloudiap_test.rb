@@ -21,7 +21,7 @@ module OmniAuth
             use Rack::Session::Cookie
             use OmniAuth::Strategies::Cloudiap, options
             run lambda { |env|
-              body = env.dig("omniauth.auth", "info").fetch_values("email", "name", "uid").join(":")
+              body = env.dig("omniauth.auth", "info")&.fetch_values("email", "name", "uid")&.join(":") || ""
               [200, env, [body]]
             }
           end
@@ -33,7 +33,7 @@ module OmniAuth
       end
 
       def test_request_phase_only_redirects_callback_url
-        result = get "/auth/cloudiap"
+        result = post "/auth/cloudiap"
         assert { result.status == 302 }
         assert { result.location == "/auth/cloudiap/callback" }
       end
